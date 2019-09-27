@@ -1,0 +1,101 @@
+<html>
+  <head>
+  <style>
+  h1 {
+  font-family:arial;
+  font-size:2em;
+  color:#222;
+}
+#info {
+  position:absolute;
+  top: 10px;
+  left: 10px;
+}
+.states {
+  fill: #E6B0AA;
+  stroke: #000;
+  stroke-width:2px;
+}
+
+  </style>
+  </head>
+<style> path:hover {opacity: 0.5; } </style>
+
+  <body>
+  <div id="info"><h1 id="name"></h1></div>
+
+    <script src="d3.v3.min.js" charset="utf-8"></script>
+    <script src="topojson.v1.min.js"></script>
+  
+  <script>
+  
+var width = 900,
+  height = 700;
+
+var svg = d3.select('body').append('svg')
+           .attr('width', width)
+           .attr('height', height);
+
+
+var projection = d3.geo.mercator() 
+          .center([100, -30]) // On centre la carte sur la France
+          .scale(300)
+      //.scale(150)
+          .translate([width / 2, height / 2])
+      ;
+      var path =  d3.geo.path().projection(projection);
+    
+    
+d3.json("australia.json", function(err, X) {
+
+
+      svg.selectAll('path')
+    .data(topojson.feature(X, X.objects.australia).features)
+    .enter()
+    .append('path')
+    .attr('class', 'states')
+    .attr('d', path)
+    .on('mouseover', function(d){
+      console.log(d.properties.state);
+      var name = d.properties.state;
+      return document.getElementById('name').innerHTML=name;
+    }); 
+
+
+     var data=[];
+
+d3.csv("cities2.csv", function(err, X) {
+   if (err) { //If error is not null, something went wrong.
+                console.log("err"+err); //Log the error.
+                       } 
+               else { 
+
+                for(i=0; i<2; i++)
+                {
+                  data[i]=X[i];
+                  console.log("data"+X[i].population);
+              
+                    }
+                }
+
+       svg.selectAll("circle")
+         .data(data)
+         .enter()
+         .append("circle")
+         .attr("cx", function(d) { 
+                 return projection([d.lon, d.lat])[0]-15;
+
+         })
+         .attr("cy", function(d) { 
+                 return projection([d.lon, d.lat])[1]-15;
+
+         })
+         .attr("r", function(d) {
+                     return Math.sqrt(parseInt(d.population)/19000);         })
+         .attr("fill","red")
+                }); 
+});
+
+  </script>
+  </body>
+</html>

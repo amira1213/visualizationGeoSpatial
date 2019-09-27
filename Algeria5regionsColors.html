@@ -1,0 +1,84 @@
+
+</html>
+<html>
+  <head>
+  <style>
+  h1 {
+  font-family:arial;
+  font-size:2em;
+  color:#333;
+}
+#info {
+  position:absolute;
+  top: 10px;
+  left: 10px;
+}
+.states {
+  fill: #E6B0AA;
+  stroke: #000;
+  stroke-width:2px;
+}
+
+  </style>
+  </head>
+  <style> path:hover {opacity: 0.5; } </style>
+
+  <body>
+  <div id="info"><h1 id="name"> </h1></div>
+
+    <script src="d3.v3.min.js" charset="utf-8"></script>
+    <script src="topojson.v1.min.js"></script>
+  
+  <script>
+  
+var width = 900,
+  height = 700;
+
+var svg = d3.select('body').append('svg')
+           .attr('width', width)
+           .attr('height', height);
+
+
+var projection = d3.geo.mercator() 
+          .center([3.0, 30.279229]) // On centre la carte sur la France
+          .scale(1500)
+      //.scale(150)
+          .translate([width / 2, height / 2])
+      ;
+      var path =  d3.geo.path().projection(projection);
+    
+    
+d3.json("algeriaR.json", function(err, d) {
+      svg.selectAll('path')
+    .data(topojson.feature(d, d.objects.dz).features)
+    .enter()
+    .append('path')
+    .attr('class', 'states')
+    .attr('d', path)
+    .on('mouseover', function(d){
+var b = path.bounds(d);
+   console.log("x1="+b[0][0]+" y1="+b[0][1]+" x2="+b[1][0]+" y2="+b[1][1])
+         var name = d.properties.ID_1+ d.properties.NAME_1;
+      return document.getElementById('name').innerHTML=name;
+    })
+     .style("fill", function(d,i) {
+           
+    var b = path.bounds(d);
+
+            if(b[0][0]>=313 && b[1][0]<=485 && b[1][1]<=238) return"blue";
+            if(b[0][0]>=447 && b[1][1]<289 && b[0][1]<193) return"pink";
+            if(b[0][1]>283 && b[1][0]<437) return"yellow";
+            else 
+            {
+              if(b[0][1]>235) return "red";
+              else return "green";
+            }
+
+              
+
+               }); 
+
+});
+  </script>
+  </body>
+</html>
